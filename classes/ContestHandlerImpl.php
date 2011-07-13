@@ -33,6 +33,17 @@ class ContestHandlerImpl implements ContestHandler {
 
 		$itemid = isset($impression->item->id) ? $impression->item->id : 0;
 
+		if (!in_array($itemid, $data)) {
+			if (count($data) > 10) {
+				array_pop($data);
+			}
+
+			array_unshift($data, $itemid);
+
+			$data_string = implode(',', $data);
+			file_put_contents('data.txt', $data_string);
+		}
+
 		if ($impression->recommend) {
 			$result_data = array();
 			$i = 0;
@@ -63,17 +74,6 @@ class ContestHandlerImpl implements ContestHandler {
 			$result = new ContestResult($result_object);
 			// post the result back to the contest server
 			$result->postTo('stdout');
-		}
-
-		if (!in_array($itemid, $data)) {
-			if (count($data) > 10) {
-				array_pop($data);
-			}
-
-			array_unshift($data, $itemid);
-
-			$data = implode(',', $data);
-			file_put_contents('data.txt', $data);
 		}
 	}
 
