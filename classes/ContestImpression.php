@@ -3,6 +3,8 @@
  * this message is created on the live server, then sent to the contest server and from there on forwarded to all teams.
  */
 class ContestImpression extends ContestMessage {
+	protected $logId;
+	
 	protected $client;
 	protected $domain;
 	protected $item;
@@ -18,6 +20,16 @@ class ContestImpression extends ContestMessage {
 		if (empty($data)) {
 			throw new ContestException("no data given", 400);
 		}
+
+		if (!isset($data->id)) {
+			throw new ContestException("no id give", 400);
+		}
+
+		if (!is_numeric($data->id)) {
+			throw new ContestException('only numeric ids are allowed', 400);
+		}
+
+		$this->logId = $data->id;
 
 		if (!isset($data->client)) {
 			throw new ContestException("no client data", 400);
@@ -66,7 +78,7 @@ class ContestImpression extends ContestMessage {
 				throw new ContestException('only numeric ids are allowed', 400);
 			}
 
-			$this->team = $data->config->team;
+			$this->setTeam($data->config->team);
 		}
 
 		if (isset($data->config->timeout)) {
@@ -84,14 +96,16 @@ class ContestImpression extends ContestMessage {
 		}
 	}
 
-	public function __toString() {
-		return 'impression' . PHP_EOL .
-			'client: ' . $this->client->id . PHP_EOL .
-			'domain: ' . $this->domain->id . PHP_EOL .
-			'item: ' . ($this->item == null ? 'null' : $this->item->id) . PHP_EOL .
-			'category: ' . ($this->category == null ? 'null' : $this->category->id) . PHP_EOL .
-			'team: ' . ($this->team == null ? 'null' : $this->team->id) . PHP_EOL .
-			'id: ' . ($this->logId == null ?  'null' : $this->logId);
+	public function __toArray() {
+		return array(
+			'id' => $this->logId,
+			'client' => $this->client->id,
+			'domain' => $this->domain->id,
+			'item' => ($this->item == null ? 'null' : $this->item->id),
+			'category' => ($this->category == null ? 'null' : $this->category->id),
+			'timeout' => $this->timeout,
+			'limit' => $this->limit,
+		) + parent::__toArray();
 	}
 
 	public function __toJSON() {
@@ -140,7 +154,10 @@ class ContestImpression extends ContestMessage {
 	}
 
 	public function getResponse() {
-		return self::createMessage('processing');
+		$resp = self::createMessage('processing');
+		$resp->setTeam($this->team);
+
+		return $resp;
 	}
 	
 	public function __get($name) {

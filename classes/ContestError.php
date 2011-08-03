@@ -32,6 +32,13 @@ class ContestError extends ContestMessage {
 		}
 	}
 
+	public function __toArray() {
+		return array(
+			'message' => $this->getMessage(),
+			'code' => $this->getCode(),
+		) + parent::__toArray();
+	}
+
 	public function __toJSON() {
 		if (!empty($this->team)) {
 			$_team = new stdClass;
@@ -44,11 +51,6 @@ class ContestError extends ContestMessage {
 			'version' => self::VERSION,
 			'team' => (isset($_team) ? $_team : null)
 		));
-	}
-
-	public function __toString() {
-		return 'error: ' . $this->message . PHP_EOL .
-			'code: ' . $this->code;
 	}
 
 	public function getMessage() {

@@ -18,11 +18,20 @@ class ContestMessage {
 	}
 
 	public function __toString() {
-		return print_r(get_object_vars($this), true);
+		return print_r($this->__toArray(), true);
+	}
+
+	public function __toArray() {
+		return array(
+			'timestamp' => intval($this->timestamp),
+			'team' => (isset($this->team) ? $this->team->id : null),
+			'type' => strtolower(substr(get_class($this), 7)),
+			'version' => self::VERSION,
+		);
 	}
 
 	public function __toJSON() {
-		return plista_json_encode("$this");
+		return plista_json_encode($this->__toArray());
 	}
 
 	/**
@@ -93,6 +102,18 @@ class ContestMessage {
 	 */
 	public function getResponse() {
 		return null;
+	}
+
+	public function setTeam($team = null) {
+		if (isset($team->id) && $team->id < 1) {
+			$team = null;
+		}
+		
+		$this->team = $team;
+	}
+
+	public function getTeam() {
+		return $this->team;
 	}
 	
 	public function postTo($target, $fetch_response = true, $callback = null) {

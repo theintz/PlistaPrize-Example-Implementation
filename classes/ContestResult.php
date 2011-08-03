@@ -32,14 +32,14 @@ class ContestResult extends ContestMessage {
 				throw new ContestException('only numeric ids are allowed', 400);
 			}
 
-			$this->team = $data->team;
+			$this->setTeam($data->team);
 		}
 	}
 
-	public function __toString() {
-		return 'result' . PHP_EOL .
-			'items: ' . $this->getItemIdsAsString() . PHP_EOL .
-			'team: ' . ($this->team == null ? 'null' : $this->team->id);
+	public function __toArray() {
+		return array(
+			'items' => $this->getItemIdsAsString()
+		) + parent::__toArray();
 	}
 
 	public function __toJSON() {

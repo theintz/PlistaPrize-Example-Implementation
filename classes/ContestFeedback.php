@@ -66,25 +66,26 @@ class ContestFeedback extends ContestMessage {
 			}
 		}
 
-		if (!isset($data->config) || !isset($data->config->team)) {
-			throw new ContestException("no team data", 400);
-		}
+		// feedbacks may or may not have a team
+		if (isset($data->config)) {
+			if (isset($data->config->team)) {
+				if (!is_numeric($data->config->team->id)) {
+					throw new ContestException('only numeric ids are allowed', 400);
+				}
 
-		if (!is_numeric($data->config->team->id)) {
-			throw new ContestException('only numeric ids are allowed', 400);
+				$this->setTeam($data->config->team);
+			}
 		}
-
-		$this->team = $data->config->team;
 	}
 
-	public function __toString() {
-		return 'feedback' . PHP_EOL .
-			'client: ' . $this->client->id . PHP_EOL .
-			'domain: ' . $this->domain->id . PHP_EOL .
-			'source item: ' . $this->source->id . PHP_EOL .
-			'target item: ' . $this->target->id . PHP_EOL .
-			'category: ' . ($this->category == null ? 'null' : $this->category->id) . PHP_EOL .
-			'team: ' . $this->team->id;
+	public function __toArray() {
+		return array(
+			'client' => $this->client->id,
+			'domain' => $this->domain->id,
+			'source' => $this->source->id,
+			'target' => $this->target->id,
+			'category' => ($this->category == null ? 'null' : $this->category->id),
+		) + parent::__toArray();
 	}
 
 	public function __toJSON() {
@@ -112,8 +113,11 @@ class ContestFeedback extends ContestMessage {
 		}
 
 		$struct['config'] = array();
-		$struct['config']['team'] = array();
-		$struct['config']['team']['id'] = $this->team->id;
+
+		if ($this->team != null) {
+			$struct['config']['team'] = array();
+			$struct['config']['team']['id'] = $this->team->id;
+		}
 
 		$struct['version'] = self::VERSION;
 
