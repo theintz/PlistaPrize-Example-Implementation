@@ -14,11 +14,36 @@ class ContestError extends ContestMessage {
 		}
 
 		$this->message = $data->error;
-		$this->code = (isset($data->code) ? $data->code : 500);
+
+		if (isset($data->code)) {
+			if (!is_numeric($data->code)) {
+				throw new ContestException('only numeric codes are allowed', 400);
+		}
+
+			$this->code = $data->code;
+		}
+
+		if (isset($data->team)) {
+			if (!is_numeric($data->team->id)) {
+				throw new ContestException('only numeric ids are allowed', 400);
+			}
+
+			$this->team = $data->team;
+		}
 	}
 
 	public function __toJSON() {
-		return plista_json_encode(array("error" => $this->message));
+		if (!empty($this->team)) {
+			$_team = new stdClass;
+			$_team->id = $this->team->id;
+		}
+
+		return plista_json_encode(array(
+			'error' => $this->message,
+			'code' => $this->code,
+			'version' => self::VERSION,
+			'team' => (isset($_team) ? $_team : null)
+		));
 	}
 
 	public function __toString() {
@@ -34,8 +59,8 @@ class ContestError extends ContestMessage {
 		return $this->code;
 	}
 
-	public function postTo($target, $fetch_response = false, $callback = null) {
-		if ($target == 'stdout' && !headers_sent()) {
+	public function postBack() {
+		if (!headers_sent()) {
 			switch ($this->code) {
 				case 400: $code_str = '400 Bad Request';
 					break;
@@ -50,6 +75,6 @@ class ContestError extends ContestMessage {
 			header("HTTP/1.1 $code_str");
 		}
 
-		parent::postTo($target, false, $callback);
+		parent::postBack();
 	}
 }

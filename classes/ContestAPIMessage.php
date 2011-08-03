@@ -135,9 +135,7 @@ class ContestAPITrigger extends ContestAPIMessage {
 }
 
 class ContestAPIResponse extends ContestAPIMessage {
-	/*
-	 * don't call parent constructor, since it expects an api key which we don't have.
-	 */
+	// don't call parent constructor, since it expects an api key which we don't have.
 	public function __construct() { }
 	
 	public function __toString() {

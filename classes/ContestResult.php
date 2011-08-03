@@ -20,8 +20,8 @@ class ContestResult extends ContestMessage {
 		$this->items = array();
 
 		foreach ($data->items as $item) {
-			if (!is_numeric($item->id)) {
-				throw new ContestException('only numeric ids are allowed', 400);
+			if (!isset($item->id)) {
+				throw new ContestException('need item id', 400);
 			}
 
 			$this->items[] = $item;

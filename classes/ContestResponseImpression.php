@@ -8,6 +8,15 @@ class ContestResponseImpression extends ContestMessage {
 	}
 
 	public function __toJSON() {
-		return StringUtil::plista_json_encode(array('msg' => 'processing', 'version' => self::VERSION));
+		if (!empty($this->team)) {
+			$_team = new stdClass;
+			$_team->id = $this->team->id;
+		}
+
+		return plista_json_encode(array(
+			'msg' => 'processing',
+			'version' => self::VERSION,
+			'team' => (isset($_team) ? $_team : null)
+		));
 	}
 }

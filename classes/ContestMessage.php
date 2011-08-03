@@ -94,22 +94,22 @@ class ContestMessage {
 	public function getResponse() {
 		return null;
 	}
-
+	
 	public function postTo($target, $fetch_response = true, $callback = null) {
-		if ($target == 'stdout') {
-			if (!headers_sent()) {
-				header('Content-Type: application/json');
-			}
+		// create new HttpRequest
+		$request = new HttpRequest($target, $callback);
 
-			echo plista_json_encode($this) . PHP_EOL;
-			flush();
-		} else {
-			// create new HttpRequest
-			$request = new HttpRequest($target, $callback);
+		// post this message and return the result (which may be null)
+		return $request->post($this, $fetch_response);
+	}
 
-			// post this message and return the result (which may be null)
-			return $request->post($this, $fetch_response);
+	public function postBack() {
+		if (!headers_sent()) {
+			header('Content-Type: application/json');
 		}
+
+		echo plista_json_encode($this) . PHP_EOL;
+		flush();
 	}
 	
 	public function __get($name) {

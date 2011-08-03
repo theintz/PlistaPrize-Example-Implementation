@@ -3,12 +3,12 @@
  * This code demonstrates how to communicate with the contest server using the supplied classes.
  * Refer to the API documentation for more in-depth information about the various requests and responses.
  */
- 
+
 // this variable holds the url of the endpoint of the contest server
 $server = 'http://contest.plista.com/api/api.php';
 
 // this variable defines the type of message you want to send to the server
-// available options are: start, stop, sync
+// available options are: start, stop, sync, trigger
 $type = 'start';
 
 // this variable holds your secret api key

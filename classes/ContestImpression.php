@@ -40,8 +40,8 @@ class ContestImpression extends ContestMessage {
 		$this->domain = $data->domain;
 
 		if (isset($data->item)) {
-			if (!is_numeric($data->item->id)) {
-				throw new ContestException('only numeric ids are allowed', 400);
+			if (!isset($data->item->id)) {
+				throw new ContestException('need item id', 400);
 			}
 
 			$this->item = $data->item;

@@ -40,8 +40,8 @@ class ContestFeedback extends ContestMessage {
 			throw new ContestException("no source item data", 400);
 		}
 
-		if (!is_numeric($data->source->id)) {
-			throw new ContestException('only numeric ids are allowed', 400);
+		if (!isset($data->source->id)) {
+			throw new ContestException('need item id', 400);
 		}
 
 		$this->source = $data->source;
@@ -50,8 +50,8 @@ class ContestFeedback extends ContestMessage {
 			throw new ContestException("no target item data", 400);
 		}
 
-		if (!is_numeric($data->target->id)) {
-			throw new ContestException('only numeric ids are allowed', 400);
+		if (!isset($data->target->id)) {
+			throw new ContestException('need item id', 400);
 		}
 
 		$this->target = $data->target;

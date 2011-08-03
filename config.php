@@ -2,8 +2,6 @@
 
 // this function tries to autoload classes whose definition is unknown to the interpreter at runtime
 function autoload_plista_contest($className) {
-	// possibly use scandir() and iterate over all directory entries
-
 	if (is_readable(dirname(__FILE__) . '/classes/' . $className . '.php')) {
 		require_once dirname(__FILE__) . '/classes/' . $className . '.php';
 	}
@@ -18,11 +16,8 @@ function plista_json_encode($elem) {
 		}
 	}
 
-	$json = json_encode($elem);
-
-	// remove all line breaks from $data
-	// this behaviour needs to be documented somewhere!!
-	return str_replace(array("\r", "\n"), "", $json);
+	return json_encode($elem);
 }
 
+// defines the network timeout for HttpRequest.php
 define('PLISTA_CONTEST_TIMEOUT', 1.0);

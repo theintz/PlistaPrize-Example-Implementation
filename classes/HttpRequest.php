@@ -21,7 +21,7 @@ class HttpRequest {
 
 	const CONTENT_TYPE = 'application/json';
 	const ENCODING = 'utf-8';
-	
+
 	public function __construct($url, $callback = null) {
 		if (empty($url)) {
 			throw new HttpException("url cannot be empty");
@@ -105,9 +105,9 @@ class HttpRequest {
 		if (!is_string($data)) {
 			throw new HttpException("wrong datatype", false);
 		}
-		
+
 		$encoding = mb_detect_encoding($data);
-		
+
 		if ($encoding != self::ENCODING) {
 			$data = mb_convert_encoding($data, self::ENCODING, $encoding);
 		}
@@ -117,7 +117,7 @@ class HttpRequest {
 		$this->headers['Content-Length'] = mb_strlen($data);
 		/*$this->headers['Accept'] = self::CONTENT_TYPE;
 		$this->headers['Accept-Charset'] = self::ENCODING;*/
-		
+
 		// build request
 		$request = "POST {$this->path} HTTP/1.1\r\n";
 
@@ -126,7 +126,7 @@ class HttpRequest {
 		}
 
 		$request .= "\r\n$data";
-		
+
 		// and send it
 		$this->sendRequest($request, $fetch_response);
 
@@ -183,14 +183,16 @@ class HttpRequest {
 		$keep_reading = true;
 
 		while ($keep_reading) {
+			$time_left = PLISTA_CONTEST_TIMEOUT - (microtime(true) - $time_start);
+
 			// check for overall timeout
-			if ((microtime(true) - $time_start) > PLISTA_CONTEST_TIMEOUT) {
+			if ($time_left <= 0.0) {
 				throw new HttpException("timeout during read", true);
 			}
 
 			// read response
 			$ready = @stream_select($a = array($this->connection), $b = array(), $c = array(),
-				(int)(floor(PLISTA_CONTEST_TIMEOUT)), (int)((PLISTA_CONTEST_TIMEOUT - floor(PLISTA_CONTEST_TIMEOUT)) * 1000000));
+				(int)(floor($time_left)), (int)(($time_left - floor($time_left)) * 1000000));
 
 			// check for eof
 			if (@feof($this->connection)) {
@@ -305,12 +307,12 @@ class HttpRequest {
 				$msg = ContestMessage::fromJSON($msg);
 			} catch (ContestException $e) {
 				try {
-					// it may also be an api message, so we test for that as well
+					// it may theoretically also be an api message, so we test for that as well
 					$msg = ContestAPIMessage::fromJSON($msg);
 				} catch (ContestException $e) { }
 			}
 		}
-		
+
 		// call callback with newly generated message
 		if (is_callable($this->callback)) {
 			try {
@@ -321,7 +323,7 @@ class HttpRequest {
 				throw new HttpException($e);
 			}
 		}
-		
+
 		if (is_array($this->response)) {
 			$this->response[] = $msg;
 		} else if (!empty($this->response)) {
