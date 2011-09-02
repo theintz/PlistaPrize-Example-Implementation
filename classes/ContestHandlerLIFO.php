@@ -23,8 +23,18 @@ class ContestHandlerLIFO implements ContestHandler {
 	 * and sends those back to the contest server.
 	 */
 	public function handleImpression(ContestImpression $impression) {
+		$domainid = $impression->domain->id;
+		$filename = "data_contest_$domainid.txt";
+
+		if (!file_exists($filename)) {
+			// try to create file
+			if (!@file_put_contents($filename, '0')) {
+				throw new ContestException('could not create data file', 500);
+			}
+		}
+
 		// read data file
-		$data = file_get_contents('data_lifo.txt');
+		$data = file_get_contents($filename);
 
 		if (strlen($data) < 1) {
 			throw new ContestException('could not read data file', 500);
@@ -52,7 +62,7 @@ class ContestHandlerLIFO implements ContestHandler {
 
 			$data_string = implode(',', $data);
 			// and write the file back
-			file_put_contents('data_lifo.txt', $data_string);
+			file_put_contents($filename, $data_string);
 		}
 
 		// check whether a recommendation is expected. if the flag is set to false, the current message is just a training message.

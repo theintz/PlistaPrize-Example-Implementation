@@ -22,7 +22,7 @@ class ContestImpression extends ContestMessage {
 		}
 
 		if (!isset($data->id)) {
-			throw new ContestException("no id give", 400);
+			throw new ContestException("no id given", 400);
 		}
 
 		if (!is_numeric($data->id)) {
@@ -112,17 +112,12 @@ class ContestImpression extends ContestMessage {
 		$struct = array();
 
 		$struct['msg'] = 'impression';
-
 		$struct['id'] = ($this->logId != null ? $this->logId : 'null');
 
-		$struct['client'] = array();
 		$struct['client']['id'] = $this->client->id;
-
-		$struct['domain'] = array();
 		$struct['domain']['id'] = $this->domain->id;
 
 		if ($this->item != null) {
-			$struct['item'] = array();
 			$struct['item']['id'] = $this->item->id;
 			$struct['item']['title'] = (isset($this->item->title) ? $this->item->title : null);
 			$struct['item']['url'] = (isset($this->item->url) ? $this->item->url : null);
@@ -131,20 +126,15 @@ class ContestImpression extends ContestMessage {
 			$struct['item']['img'] = (isset($this->item->img) ? $this->item->img : null);
 		}
 
-		$struct['context'] = array();
-
 		if ($this->category != null) {
-			$struct['context']['category'] = array();
 			$struct['context']['category']['id'] = $this->category->id;
 		}
 
-		$struct['config'] = array();
 		$struct['config']['timeout'] = $this->timeout;
 		$struct['config']['recommend'] = $this->recommend;
 		$struct['config']['limit'] = $this->limit;
 
 		if ($this->team != null) {
-			$struct['config']['team'] = array();
 			$struct['config']['team']['id'] = $this->team->id;
 		}
 

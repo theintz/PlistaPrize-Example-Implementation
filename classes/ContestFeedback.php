@@ -93,29 +93,16 @@ class ContestFeedback extends ContestMessage {
 
 		$struct['msg'] = 'feedback';
 
-		$struct['client'] = array();
 		$struct['client']['id'] = $this->client->id;
-
-		$struct['domain'] = array();
 		$struct['domain']['id'] = $this->domain->id;
-
-		$struct['source'] = array();
 		$struct['source']['id'] = $this->source->id;
-
-		$struct['target'] = array();
 		$struct['target']['id'] = $this->target->id;
 
-		$struct['context'] = array();
-
 		if ($this->category != null) {
-			$struct['context']['category'] = array();
 			$struct['context']['category']['id'] = $this->category->id;
 		}
 
-		$struct['config'] = array();
-
 		if ($this->team != null) {
-			$struct['config']['team'] = array();
 			$struct['config']['team']['id'] = $this->team->id;
 		}
 

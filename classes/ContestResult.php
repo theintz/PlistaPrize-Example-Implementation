@@ -47,14 +47,11 @@ class ContestResult extends ContestMessage {
 
 		$struct['msg'] = 'result';
 
-		$struct['items'] = array();
-
 		foreach ($this->items as $item) {
 			$struct['items'][] = array('id' => $item->id);
 		}
 
 		if ($this->team != null) {
-			$struct['team'] = array();
 			$struct['team']['id'] = $this->team->id;
 		}
 
