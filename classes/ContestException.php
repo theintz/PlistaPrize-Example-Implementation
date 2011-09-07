@@ -17,7 +17,7 @@ class ContestException extends Exception {
 	public function getError() {
 		if ($this->error == null) {
 			$data = new stdClass;
-			$data->error = $this->getMessage();
+			$data->error = 'Exception: ' . $this->getMessage();
 			$data->code = $this->getCode();
 
 			$this->error = new ContestError($data);
