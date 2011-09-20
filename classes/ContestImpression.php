@@ -157,4 +157,12 @@ class ContestImpression extends ContestMessage {
 		
 		return parent::__get($name);
 	}
+
+	public function __isset($name) {
+		if (!in_array($name, array('client', 'domain', 'item', 'category', 'timeout', 'recommend', 'limit', 'team'))) {
+			return false;
+		}
+
+		return parent::__isset($name);
+	}
 }

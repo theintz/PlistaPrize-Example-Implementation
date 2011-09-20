@@ -122,4 +122,12 @@ class ContestFeedback extends ContestMessage {
 		
 		return parent::__get($name);
 	}
+
+	public function __isset($name) {
+		if (!in_array($name, array('client', 'domain', 'source', 'target', 'category'))) {
+			return false;
+		}
+
+		return parent::__isset($name);
+	}
 }
