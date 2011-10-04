@@ -124,6 +124,7 @@ class ContestImpression extends ContestMessage {
 			$struct['item']['created'] = (isset($this->item->created) ? $this->item->created : null);
 			$struct['item']['text'] = (isset($this->item->text) ? $this->item->text : null);
 			$struct['item']['img'] = (isset($this->item->img) ? $this->item->img : null);
+			$struct['item']['recommendable'] = (isset($this->item->recommendable) ? ($this->item->recommendable) : true);
 		}
 
 		if ($this->category != null) {
