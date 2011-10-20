@@ -22,6 +22,8 @@ class HttpRequest {
 	const CONTENT_TYPE = 'application/json';
 	const ENCODING = 'utf-8';
 
+	const MAX_RESPONSE_SIZE = 0xFFFF; // 64 kB
+
 	public function __construct($url, $callback = null) {
 		if (empty($url)) {
 			throw new HttpException("url cannot be empty");
@@ -181,13 +183,14 @@ class HttpRequest {
 	private function receiveResponse() {
 		$time_start = microtime(true);
 		$keep_reading = true;
+		$response_size = 0;
 
 		while ($keep_reading) {
 			$time_left = PLISTA_CONTEST_TIMEOUT - (microtime(true) - $time_start);
 
 			// check for overall timeout
 			if ($time_left <= 0.0) {
-				throw new HttpException("timeout during read", true);
+				throw new HttpException("global timeout during read", true);
 			}
 
 			// read response
@@ -201,15 +204,22 @@ class HttpRequest {
 
 			if (!$ready) {
 				$this->disconnect();
-				throw new HttpException("read timed out", true);
+				throw new HttpException("local timeout during read", true);
 			}
 
 			// read single line
-			$line = @fgets($this->connection);
+			$line = @fgets($this->connection, self::MAX_RESPONSE_SIZE);
 
 			if ($line === false) {
 				$this->disconnect();
 				throw new HttpException("read from socket failed", false);
+			}
+
+			$response_size += count($line);
+
+			if ($response_size > self::MAX_RESPONSE_SIZE) {
+				$this->disconnect();
+				throw new HttpException("response was longer than max length", false);
 			}
 
 			// call parser method and determine whether to continue the loop

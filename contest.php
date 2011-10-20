@@ -18,32 +18,27 @@ $msg = urldecode($msg);
 
 try {
 	// parse plain json into a ContestMessage
-	$data = ContestMessage::fromJSON($msg);
+	$msg = ContestMessage::fromJSON($msg);
 	
-	if (!$data) {
+	if (!$msg) {
 		throw new ContestException('parsing json failed', 400);
-	} if (!is_array($data)) {
-		// only a single message got sent, this will be the most common case, except when a sync is requested
-		$data = array($data);
 	}
 
-	foreach ($data as $msg) {
-		// log the message
-		@file_put_contents('plista.log', date('c') . " Message: $msg\n", FILE_APPEND);
+	// log the message
+	@file_put_contents('plista.log', date('c') . " Message: $msg\n", FILE_APPEND);
 
-		if ($msg instanceof ContestImpression) {
-			// call the handler method, which is also responsible for posting the data back to the contest server
-			$handler->handleImpression($msg);
-		} else if ($msg instanceof ContestFeedback) {
-			// no response required here
-			$handler->handleFeedback($msg);
-		} else if ($msg instanceof ContestError) {
-			// yup, it's an error
-			$handler->handleError($msg);
-		} else {
-			// we don't know how to handle anything else
-			throw new ContestException('unknown message type: ' . get_class($msg));
-		}
+	if ($msg instanceof ContestImpression) {
+		// call the handler method, which is also responsible for posting the data back to the contest server
+		$handler->handleImpression($msg);
+	} else if ($msg instanceof ContestFeedback) {
+		// no response required here
+		$handler->handleFeedback($msg);
+	} else if ($msg instanceof ContestError) {
+		// yup, it's an error
+		$handler->handleError($msg);
+	} else {
+		// we don't know how to handle anything else
+		throw new ContestException('unknown message type: ' . get_class($msg));
 	}
 } catch (ContestException $e) {
 	// we forward every error we catch back to the server
