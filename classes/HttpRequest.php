@@ -95,7 +95,7 @@ class HttpRequest {
 		}
 	}
 
-	public function post($data, $fetch_response = true) {
+	public function post($data, $fetch_response = true, $path = null) {
 		if (empty($data)) {
 			throw new HttpException("no data given", false);
 		}
@@ -114,6 +114,10 @@ class HttpRequest {
 			$data = mb_convert_encoding($data, self::ENCODING, $encoding);
 		}
 
+		if (empty($path)) {
+			$path = $this->path;
+		}
+
 		// set header values
 		$this->headers['Content-Type'] = self::CONTENT_TYPE . '; charset=' . self::ENCODING;
 		$this->headers['Content-Length'] = mb_strlen($data);
@@ -121,7 +125,7 @@ class HttpRequest {
 		$this->headers['Accept-Charset'] = self::ENCODING;*/
 
 		// build request
-		$request = "POST {$this->path} HTTP/1.1\r\n";
+		$request = "POST $path HTTP/1.1\r\n";
 
 		foreach ($this->headers as $header => $value) {
 			$request .= "$header: $value\r\n";
@@ -140,13 +144,17 @@ class HttpRequest {
 		}
 	}
 
-	public function get() {
+	public function get($path = null) {
+		if (empty($path)) {
+			$path = $this->path;
+		}
+
 		// set header values
 		$this->headers['Accept'] = self::CONTENT_TYPE;
 		$this->headers['Accept-Charset'] = self::ENCODING;
 
 		// build request
-		$request = "GET {$this->path} HTTP/1.1\r\n";
+		$request = "GET $path HTTP/1.1\r\n";
 
 		foreach ($this->headers as $header => $value) {
 			$request .= "$header: $value\r\n";
