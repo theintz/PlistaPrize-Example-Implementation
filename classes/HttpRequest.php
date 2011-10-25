@@ -100,8 +100,16 @@ class HttpRequest {
 			throw new HttpException("no data given", false);
 		}
 
-		if ($data instanceof ContestMessage) {
-			$data = plista_json_encode($data);
+		$contenttype = 'application/x-www-form-urlencoded';
+		
+		if (is_string($data)) {
+			$data = urlencode($data);
+		} else if (is_array($data)) {
+			$data = http_build_query($data);
+		} else if ($data instanceof ContestMessage) {
+			$data = StringUtil::plista_json_encode($data);
+			
+			$contenttype = 'application/json';
 		}
 
 		if (!is_string($data)) {
@@ -119,7 +127,7 @@ class HttpRequest {
 		}
 
 		// set header values
-		$this->headers['Content-Type'] = self::CONTENT_TYPE . '; charset=' . self::ENCODING;
+		$this->headers['Content-Type'] = $contenttype . '; charset=' . self::ENCODING;
 		$this->headers['Content-Length'] = mb_strlen($data);
 		/*$this->headers['Accept'] = self::CONTENT_TYPE;
 		$this->headers['Accept-Charset'] = self::ENCODING;*/
@@ -150,8 +158,8 @@ class HttpRequest {
 		}
 
 		// set header values
-		$this->headers['Accept'] = self::CONTENT_TYPE;
-		$this->headers['Accept-Charset'] = self::ENCODING;
+		/*$this->headers['Accept'] = self::CONTENT_TYPE;
+		$this->headers['Accept-Charset'] = self::ENCODING;*/
 
 		// build request
 		$request = "GET $path HTTP/1.1\r\n";
