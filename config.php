@@ -20,4 +20,4 @@ function plista_json_encode($elem) {
 }
 
 // defines the network timeout for HttpRequest.php
-define('PLISTA_CONTEST_TIMEOUT', 0.5);
+define('PLISTA_CONTEST_TIMEOUT', 0.2);
